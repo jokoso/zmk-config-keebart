@@ -2,12 +2,39 @@
  * Copyright (c) 2020 The ZMK Contributors
  *
  * SPDX-License-Identifier: MIT
+ *
+ * Miryoku-inspired layout for Piantor Pro BT (5-col, 36-key)
+ * Reference: https://github.com/manna-harbour/miryoku
+ *
+ * Base: Colemak-DH
+ * Home row mods: CAGS (Ctrl / Alt / GUI / Shift), mirrored both hands (macOS)
+ * Thumb cluster: ESC→Media | Spc→Nav | Tab→Mouse ║ Ret→Sym | Bspc→Num | Del→Fun
  */
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/pointing.h>
+
+// Layer indices
+#define BASE   0
+#define EXTRA  1
+#define TAP    2
+#define BUTTON 3
+#define NAV    4
+#define MOUSE  5
+#define MEDIA  6
+#define NUM    7
+#define SYM    8
+#define FUN    9
+
+// Key positions (36-key 5-col layout):
+//  0  1  2  3  4    5  6  7  8  9
+// 10 11 12 13 14   15 16 17 18 19
+// 20 21 22 23 24   25 26 27 28 29
+//          30 31 32  33 34 35
 
 / {
     chosen {
@@ -16,111 +43,180 @@
 };
 
 / {
+    behaviors {
+        // Left-hand home row mods — hold triggers when a right-side key is also pressed
+        hml: homerow_mods_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <5 6 7 8 9 15 16 17 18 19 25 26 27 28 29 33 34 35>;
+            hold-trigger-on-release;
+        };
+
+        // Right-hand home row mods — hold triggers when a left-side key is also pressed
+        hmr: homerow_mods_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 30 31 32>;
+            hold-trigger-on-release;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
-        default_layer {
-            display-name = "QWERTY";
-            // -----------------------------------------------------------------------
-            // |  Q  |  W  |  E  |  R  |  T  |  Y  |  U   |  I  |  O  |  P  |
-            // |  A  |  S  |  D  |  F  |  G  |  H  |  J   |  K  |  L  |  ;  |
-            // |  Z  |  X  |  C  |  V  |  B  |  N  |  M   |  ,  |  .  |  /  |
-            //              | GUI | LWR | SPC | ENT | RSE  | ALT |
+        // ┌─────────────────────────────────────────────────────────────────────────┐
+        // │ 0: Base — Colemak-DH + home row mods (CAGS, macOS)                     │
+        // │  Q   W   F   P   B     J   L   U   Y   '                               │
+        // │ ⌃A  ⌥R  ⌘S  ⇧T   G     M  ⇧N  ⌘E  ⌥I  ⌃O                              │
+        // │ ⬛Z  ⌥X   C   D   V     K   H   ,  ⌥.  ⬛/                              │
+        // │          ⎋  Spc Tab   Ret Bsp Del                                       │
+        // │       (Med)(Nav)(Mou)(Sym)(Num)(Fun)                                    │
+        // └─────────────────────────────────────────────────────────────────────────┘
+        base_layer {
+            display-name = "Base";
             bindings = <
-                &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P
-                &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI
-                &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M  &kp COMMA &kp DOT &kp FSLH
-                         &kp LGUI &mo 1 &kp SPACE &kp RET &mo 2 &kp RALT
+                &kp Q         &kp W         &kp F          &kp P          &kp B            &kp J          &kp L          &kp U          &kp Y         &kp SQT
+                &hml LCTRL A  &hml LALT R   &hml LGUI S    &hml LSHFT T   &kp G            &kp M          &hmr RSHFT N   &hmr RGUI E    &hmr RALT I   &hmr RCTRL O
+                &lt BUTTON Z  &hml RALT X   &kp C          &kp D          &kp V            &kp K          &kp H          &kp COMMA      &hmr RALT DOT &lt BUTTON FSLH
+                                            &lt MEDIA ESC  &lt NAV SPACE  &lt MOUSE TAB    &lt SYM RET    &lt NUM BSPC   &lt FUN DEL
             >;
         };
 
-        lower_layer {
-            display-name = "NUMBER";
-            // -----------------------------------------------------------------------------------------
-            // |  1  |  2  |  3  |  4  |  5    |  6  |  7  |  8  |  9  |  0  |
-            // | BT1 | BT2 | BT3 | BT4 | BT5   | LFT | DWN |  UP | RGT |     |
-            // | BTCR| RGB | RST | BOOT| Unlock|     |     |     |     |     |
-            //              | GUI |     | SPC   | ENT |     | ALT |
+        // ┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 1: Extra — QWERTY with home row mods (same CAGS structure as Base)                         │
+        // └──────────────────────────────────────────────────────────────────────────────────────────────┘
+        extra_layer {
+            display-name = "Extra";
             bindings = <
-                &kp N1       &kp N2          &kp N3       &kp N4       &kp N5         &kp N6   &kp N7   &kp N8 &kp N9    &kp N0
-                &bt BT_SEL 0 &bt BT_SEL 1    &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &kp LEFT &kp DOWN &kp UP &kp RIGHT &trans
-                &bt BT_CLR   &rgb_ug RGB_TOG &sys_reset   &bootloader  &studio_unlock &trans   &trans   &trans &trans    &trans
-                                             &kp LGUI     &trans       &kp SPACE      &kp LGUI &trans   &kp SPACE
+                &kp Q         &kp W         &kp E          &kp R          &kp T            &kp Y          &kp U          &kp I          &kp O         &kp P
+                &hml LCTRL A  &hml LALT S   &hml LGUI D    &hml LSHFT F   &kp G            &kp H          &hmr RSHFT J   &hmr RGUI K    &hmr RALT L   &hmr RCTRL SQT
+                &lt BUTTON Z  &hml RALT X   &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &hmr RALT DOT &lt BUTTON FSLH
+                                            &lt MEDIA ESC  &lt NAV SPACE  &lt MOUSE TAB    &lt SYM RET    &lt NUM BSPC   &lt FUN DEL
             >;
         };
 
-        raise_layer {
-            display-name = "SYMBOL";
-            // -----------------------------------------------------------------------------------------
-            // |  !  |  @  |  #  |  $  |  %  |  ^  |  &  |  *  |  (  |  )  |
-            // |     |     |     |     |     |  -  |  =  |  [  |  ]  |  \  |
-            // |     |     |     |     |     |  _  |  +  |  {  |  }  | "|" |
-            //              | GUI |     | SPC | ENT |     | ALT |
+        // ┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 2: Tap — plain QWERTY, no hold behaviors (useful for gaming or hold-incompatible apps)       │
+        // └──────────────────────────────────────────────────────────────────────────────────────────────┘
+        tap_layer {
+            display-name = "Tap";
             bindings = <
-                &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT  &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR
-                &trans   &trans &trans   &trans   &trans     &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH
-                &trans   &trans &trans   &trans   &trans     &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE
-                                &kp LGUI &trans   &kp SPACE  &kp RET   &trans    &kp RALT
+                &kp Q         &kp W         &kp E          &kp R          &kp T            &kp Y          &kp U          &kp I          &kp O         &kp P
+                &kp A         &kp S         &kp D          &kp F          &kp G            &kp H          &kp J          &kp K          &kp L         &kp SQT
+                &kp Z         &kp X         &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &kp DOT       &kp FSLH
+                                            &kp ESC        &kp SPACE      &kp TAB          &kp RET        &kp BSPC       &kp DEL
             >;
         };
 
-        extra_layer_1 {
-            display-name = "EXTRA 1";
+        // ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 3: Button — clipboard (undo/cut/copy/paste/redo) mirrored both halves; mouse buttons on thumbs           │
+        // │ Activated by holding Z (left outer) or / (right outer)                                                   │
+        // └──────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        button_layer {
+            display-name = "Button";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &kp LG(Z)     &kp LG(X)     &kp LG(C)      &kp LG(V)      &kp LG(LS(Z))        &kp LG(LS(Z))      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp LG(Z)     &kp LG(X)     &kp LG(C)      &kp LG(V)      &kp LG(LS(Z))        &kp LG(LS(Z))      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                                            &mkp MCLK      &mkp LCLK      &mkp RCLK        &mkp RCLK      &mkp LCLK      &mkp MCLK
             >;
         };
 
-        extra_layer_2 {
-            display-name = "EXTRA 2";
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 4: Nav — cursor + clipboard (right); layer switches + modifiers (left)                                   │
+        // │ Activated by holding Space                                                                               │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        nav_layer {
+            display-name = "Nav";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &caps_word     &kp LEFT       &kp DOWN       &kp UP        &kp RIGHT
+                &none         &kp RALT      &to NUM        &to NAV        &none            &kp INS        &kp HOME       &kp PG_DN      &kp PG_UP     &kp END
+                                            &none          &none          &none            &kp RET        &kp BSPC       &kp DEL
             >;
         };
 
-        extra_layer_3 {
-            display-name = "EXTRA 3";
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 5: Mouse — pointer movement + scroll (right); layer switches + modifiers (left)                         │
+        // │ Activated by holding Tab                                                                                 │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        mouse_layer {
+            display-name = "Mouse";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &none          &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP  &mmv MOVE_RIGHT
+                &none         &kp RALT      &to SYM        &to MOUSE      &none            &none          &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP  &msc SCRL_RIGHT
+                                            &none          &none          &none            &mkp RCLK      &mkp LCLK      &mkp MCLK
             >;
         };
 
-        extra_layer_4 {
-            display-name = "EXTRA 4";
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 6: Media — RGB, media controls, BT management (right); layer switches + BT clear (left)                 │
+        // │ studio_unlock on right home row for ZMK Studio access                                                   │
+        // │ Activated by holding Esc                                                                                 │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        media_layer {
+            display-name = "Media";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &bootloader   &to TAP       &to EXTRA      &to BASE       &bt BT_CLR       &rgb_ug RGB_TOG &rgb_ug RGB_EFF &rgb_ug RGB_HUI &rgb_ug RGB_SAI &rgb_ug RGB_BRI
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &studio_unlock  &kp C_PREV      &kp C_VOL_DN    &kp C_VOL_UP    &kp C_NEXT
+                &none         &kp RALT      &to FUN        &to MEDIA      &none            &out OUT_TOG    &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3
+                                            &none          &none          &none            &kp C_STOP      &kp C_PP        &kp C_MUTE
             >;
         };
 
-        extra_layer_5 {
-            display-name = "EXTRA 5";
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 7: Num — numpad layout (left); layer switches + modifiers (right)                                        │
+        // │ Thumb: . | 0 | -                                                                                         │
+        // │ Activated by holding Backspace                                                                           │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        num_layer {
+            display-name = "Num";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &kp LBKT      &kp N7        &kp N8         &kp N9         &kp RBKT         &none          &to BASE       &to EXTRA      &to TAP       &bootloader
+                &kp SEMI      &kp N4        &kp N5         &kp N6         &kp EQUAL        &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp GRAVE     &kp N1        &kp N2         &kp N3         &kp BSLH         &none          &to NUM        &to NAV        &kp RALT      &none
+                                            &kp DOT        &kp N0         &kp MINUS        &none          &none          &none
             >;
         };
 
-        extra_layer_6 {
-            display-name = "EXTRA 6";
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 8: Sym — shifted symbol variants mirroring Num positions (left); layer switches + modifiers (right)     │
+        // │ Thumb: ( | ) | _                                                                                         │
+        // │ Activated by holding Return                                                                              │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        sym_layer {
+            display-name = "Sym";
             bindings = <
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
-                               &trans &trans &trans  &trans &trans &trans
+                &kp LBRC      &kp AMPS      &kp ASTRK      &kp LPAR       &kp RBRC         &none          &to BASE       &to EXTRA      &to TAP       &bootloader
+                &kp COLON     &kp DLLR      &kp PRCNT      &kp CARET      &kp PLUS         &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp TILDE     &kp EXCL      &kp AT         &kp HASH       &kp PIPE         &none          &to SYM        &to MOUSE      &kp RALT      &none
+                                            &kp LPAR       &kp RPAR       &kp UNDER        &none          &none          &none
+            >;
+        };
+
+        // ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+        // │ 9: Fun — function keys mirroring Num layout (left); layer switches + modifiers (right)                  │
+        // │ Thumb: App | Space | Tab                                                                                 │
+        // │ Activated by holding Delete                                                                              │
+        // └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        fun_layer {
+            display-name = "Fun";
+            bindings = <
+                &kp F12       &kp F7        &kp F8         &kp F9         &kp PSCRN        &none          &to BASE       &to EXTRA      &to TAP       &bootloader
+                &kp F11       &kp F4        &kp F5         &kp F6         &kp SLCK         &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp F10       &kp F1        &kp F2         &kp F3         &kp PAUSE_BREAK  &none          &to FUN        &to MEDIA      &kp RALT      &none
+                                            &kp K_APP      &kp SPACE      &kp TAB          &none          &none          &none
             >;
         };
     };

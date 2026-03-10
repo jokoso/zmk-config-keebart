@@ -153,9 +153,9 @@
         mouse_layer {
             display-name = "Mouse";
             bindings = <
-                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
-                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &none          &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP  &mmv MOVE_RIGHT
-                &none         &kp RALT      &to SYM        &to MOUSE      &none            &none          &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP  &msc SCRL_RIGHT
+                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LA(A)      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &kp LA(O)      &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP  &mmv MOVE_RIGHT
+                &none         &kp RALT      &to SYM        &to MOUSE      &none            &kp LA(SQT)    &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP  &msc SCRL_RIGHT
                                             &none          &none          &none            &mkp RCLK      &mkp LCLK      &mkp MCLK
             >;
         };
@@ -198,9 +198,9 @@
         sym_layer {
             display-name = "Sym";
             bindings = <
-                &kp LBRC      &kp AMPS      &kp ASTRK      &kp LPAR       &kp RBRC         &kp LA(A)      &to BASE       &to EXTRA      &to TAP       &bootloader
-                &kp COLON     &kp DLLR      &kp PRCNT      &kp CARET      &kp PLUS         &kp LA(O)      &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
-                &kp TILDE     &kp EXCL      &kp AT         &kp HASH       &kp PIPE         &kp LA(SQT)    &to SYM        &to MOUSE      &kp RALT      &none
+                &kp LBRC      &kp AMPS      &kp ASTRK      &kp LPAR       &kp RBRC         &none          &to BASE       &to EXTRA      &to TAP       &bootloader
+                &kp COLON     &kp DLLR      &kp PRCNT      &kp CARET      &kp PLUS         &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp TILDE     &kp EXCL      &kp AT         &kp HASH       &kp PIPE         &none          &to SYM        &to MOUSE      &kp RALT      &none
                                             &kp LPAR       &kp RPAR       &kp UNDER        &none          &none          &none
             >;
         };

@@ -140,8 +140,8 @@
             display-name = "Nav";
             bindings = <
                 &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))  &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
-                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &caps_word     &kp LEFT       &kp DOWN       &kp UP        &kp RIGHT
-                &none         &kp RALT      &to NUM        &to NAV        &none            &kp INS        &kp HOME       &kp PG_DN      &kp PG_UP     &kp END
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &kp LEFT       &kp DOWN       &kp UP         &kp RIGHT     &caps_word
+                &none         &kp RALT      &to NUM        &to NAV        &none            &kp HOME       &kp PG_DN      &kp PG_UP      &kp END       &kp INS
                                             &none          &none          &none            &kp RET        &kp BSPC       &kp DEL
             >;
         };
@@ -154,8 +154,8 @@
             display-name = "Mouse";
             bindings = <
                 &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))  &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
-                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &caps_word     &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP  &mmv MOVE_RIGHT
-                &none         &kp RALT      &to SYM        &to MOUSE      &none            &kp INS        &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP  &msc SCRL_RIGHT
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP  &mmv MOVE_RIGHT &caps_word
+                &none         &kp RALT      &to SYM        &to MOUSE      &none            &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP  &msc SCRL_RIGHT &kp INS
                                             &none          &none          &none            &mkp RCLK      &mkp LCLK      &mkp MCLK
             >;
         };

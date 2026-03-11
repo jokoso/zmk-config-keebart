@@ -139,9 +139,9 @@
         nav_layer {
             display-name = "Nav";
             bindings = <
-                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LA(A)      &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
-                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &kp LA(O)      &kp LEFT       &kp DOWN       &kp UP        &kp RIGHT
-                &none         &kp RALT      &to NUM        &to NAV        &none            &kp LA(SQT)    &kp HOME       &kp PG_DN      &kp PG_UP     &kp END
+                &bootloader   &to TAP       &to EXTRA      &to BASE       &none            &kp LG(LS(Z))  &kp LG(V)      &kp LG(C)      &kp LG(X)     &kp LG(Z)
+                &kp LCTRL     &kp LALT      &kp LGUI       &kp LSHFT      &none            &caps_word     &kp LEFT       &kp DOWN       &kp UP        &kp RIGHT
+                &none         &kp RALT      &to NUM        &to NAV        &none            &kp INS        &kp HOME       &kp PG_DN      &kp PG_UP     &kp END
                                             &none          &none          &none            &kp RET        &kp BSPC       &kp DEL
             >;
         };
@@ -213,9 +213,9 @@
         fun_layer {
             display-name = "Fun";
             bindings = <
-                &kp F12       &kp F7        &kp F8         &kp F9         &kp PSCRN        &none          &to BASE       &to EXTRA      &to TAP       &bootloader
-                &kp F11       &kp F4        &kp F5         &kp F6         &kp SLCK         &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
-                &kp F10       &kp F1        &kp F2         &kp F3         &kp PAUSE_BREAK  &none          &to FUN        &to MEDIA      &kp RALT      &none
+                &kp F12       &kp F7        &kp F8         &kp F9         &kp LA(A)        &none          &to BASE       &to EXTRA      &to TAP       &bootloader
+                &kp F11       &kp F4        &kp F5         &kp F6         &kp LA(O)        &none          &kp RSHFT      &kp RGUI       &kp RALT      &kp RCTRL
+                &kp F10       &kp F1        &kp F2         &kp F3         &kp LA(SQT)      &none          &to FUN        &to MEDIA      &kp RALT      &none
                                             &kp K_APP      &kp SPACE      &kp TAB          &none          &none          &none
             >;
         };
